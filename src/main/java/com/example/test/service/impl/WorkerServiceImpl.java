@@ -21,7 +21,7 @@ public class WorkerServiceImpl implements WorkerService {
     @Override
     public WorkerResponse getById(Long id) {
         Optional<Worker> worker = workerRepository.findById(id);
-        if(!worker.isPresent()){
+        if(worker.isEmpty()){
             throw new NotFoundException("LOL", HttpStatus.NOT_FOUND);
         }
         return workerMapper.toDto(worker.get());

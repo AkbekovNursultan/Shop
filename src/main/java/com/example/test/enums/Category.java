@@ -1,5 +1,5 @@
 package com.example.test.enums;
 
-public enum ProductType {
+public enum Category {
     CLOTHES, FURNITURE, TOYS
 }

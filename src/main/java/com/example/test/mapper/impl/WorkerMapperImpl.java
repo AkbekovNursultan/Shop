@@ -20,11 +20,11 @@ public class WorkerMapperImpl implements WorkerMapper {
 
     @Override
     public List<WorkerResponse> toDtoS(List<Worker> all) {
-        List<WorkerResponse> workerResponse = new ArrayList<>();
+        List<WorkerResponse> workerResponses = new ArrayList<>();
         for(Worker worker : all){
-            workerResponse.add(toDto(worker));
+            workerResponses.add(toDto(worker));
         }
 
-        return workerResponse;
+        return workerResponses;
     }
 }

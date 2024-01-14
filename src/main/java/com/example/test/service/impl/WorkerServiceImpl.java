@@ -31,6 +31,7 @@ public class WorkerServiceImpl implements WorkerService {
     public void register(WorkerRequest workerRequest) {
         Worker worker = new Worker();
         worker.setName(workerRequest.getName());
+        worker.setSalary(workerRequest.getSalary());
         workerRepository.save(worker);
 
     }

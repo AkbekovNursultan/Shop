@@ -7,4 +7,5 @@ import lombok.Setter;
 @Setter
 public class WorkerRequest {
     private String name;
+    private Integer salary;
 }

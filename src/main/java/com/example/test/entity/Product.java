@@ -21,4 +21,11 @@ public class Product {
     @Enumerated(EnumType.STRING)
     private Category category;
     private Integer quantity;
+
+    @ManyToOne()
+    Worker orderedBy;
+
+    @ManyToOne()
+    Courier courier;
 }
+

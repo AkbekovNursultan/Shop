@@ -14,6 +14,7 @@ public class WorkerMapperImpl implements WorkerMapper {
         WorkerResponse workerResponse = new WorkerResponse();
         workerResponse.setName(user.getName());
         workerResponse.setId(user.getId());
+        workerResponse.setSalary(user.getSalary());
 
         return workerResponse;
     }

@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -19,4 +21,8 @@ public class Worker {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
+    private Integer salary;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    List<Product> ordersList;
 }

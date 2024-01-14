@@ -25,9 +25,13 @@ public class ProductController {
     public List<ProductResponse> getAll(){
         return productService.getAll();
     }
-    @PostMapping("/register")
-    public void register(@RequestBody ProductRequest productRequest){
-        productService.register(productRequest);
+    @PostMapping("/order/{workerId}")
+    public void register(@RequestBody ProductRequest productRequest, @PathVariable Long workerId){
+        productService.register(productRequest,workerId);
+    }
+    @PostMapping("/deliver/{productId}/{delivererId}")
+    public void deliver(@PathVariable Long productId, @PathVariable Long delivererId){
+        productService.deliver(productId, delivererId);
     }
     @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable Long id){

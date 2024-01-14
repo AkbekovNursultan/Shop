@@ -1,11 +1,12 @@
-package com.example.test.dto.delivery;
+package com.example.test.dto.courier;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class DeliveryResponse {
+public class CourierResponse {
     private Long id;
     private String name;
+    private Integer salary;
 }

@@ -11,7 +11,9 @@ public interface ProductService {
 
     List<ProductResponse> getAll();
 
-    void register(ProductRequest productRequest);
+    void register(ProductRequest productRequest, Long workerId);
 
     void deleteProduct(Long id);
+
+    void deliver(Long productId, Long delivererId);
 }

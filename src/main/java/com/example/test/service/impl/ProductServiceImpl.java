@@ -66,15 +66,6 @@ public class ProductServiceImpl implements ProductService {
         workerRepository.save(worker.get());
         productRepository.save(product);
     }
-
-    @Override
-    public void deleteProduct(Long id) {
-        if(productRepository.findById(id).isEmpty()){
-            throw new NotFoundException("This product doesn't exist", HttpStatus.NOT_FOUND);
-        }
-        productRepository.deleteById(id);
-    }
-
     @Override
     public void deliver(Long productId, Long delivererId) {
         Optional<Courier> courier = courierRepository.findById(delivererId);
@@ -94,7 +85,40 @@ public class ProductServiceImpl implements ProductService {
         courier.get().setSalary(courier.get().getSalary() + 75);
         productRepository.save(product.get());
     }
-
+    @Override
+    public void deleteProduct(Long id) {
+        Product product = productRepository.findById(id).get();
+        if(productRepository.findById(id).isEmpty()){
+            throw new NotFoundException("This product doesn't exist", HttpStatus.NOT_FOUND);
+        }
+        Worker worker = workerRepository.findById(product.getOrderedBy().getId()).get();
+        Courier courier = courierRepository.findById(product.getDeliveredBy().getId()).get();
+        deleteOrderedBy(worker, id);
+        deleteDeliveredBy(courier, id);
+        productRepository.deleteById(id);
+    }
+    public void deleteOrderedBy(Worker worker, Long id){
+        List<Product> ordersList = worker.getOrdersList();
+        List<Product> newOrdersList = new ArrayList<>();
+        for(Product product : ordersList){
+            if(!product.getId().equals(id)){
+                newOrdersList.add(product);
+            }
+        }
+        worker.setOrdersList(newOrdersList);
+        workerRepository.save(worker);
+    }
+    public void deleteDeliveredBy(Courier courier, Long id){
+        List<Product> deliveriesList = courier.getDeliveriesList();
+        List<Product> newDeliveriesList = new ArrayList<>();
+        for(Product product : deliveriesList){
+            if(!product.getId().equals(id)){
+                newDeliveriesList.add(product);
+            }
+        }
+        courier.setDeliveriesList(newDeliveriesList);
+        courierRepository.save(courier);
+    }
 
     public boolean containsCategory(String s){
         for(Category category : Category.values()){

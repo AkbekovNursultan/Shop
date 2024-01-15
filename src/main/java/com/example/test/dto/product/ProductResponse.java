@@ -14,4 +14,6 @@ public class ProductResponse {
     @Enumerated(EnumType.STRING)
     private Category category;
     private Integer quantity;
+    private String orderedBy;
+    private String deliveredBy;
 }

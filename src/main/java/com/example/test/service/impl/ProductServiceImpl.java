@@ -60,8 +60,10 @@ public class ProductServiceImpl implements ProductService {
             products = worker.get().getOrdersList();
         }
         product.setOrderedBy(worker.get());
+        products.add(product);
         worker.get().setOrdersList(products);
         worker.get().setSalary(worker.get().getSalary() + 50);
+        workerRepository.save(worker.get());
         productRepository.save(product);
     }
 
@@ -80,11 +82,17 @@ public class ProductServiceImpl implements ProductService {
             throw new NotFoundException("This deliveryman doesn't exist", HttpStatus.NOT_FOUND);
         }
         Optional<Product> product = productRepository.findById(productId);
+        List<Product> products = new ArrayList<>();
         if(product.isEmpty()){
             throw new NotFoundException("This product doesn't exist", HttpStatus.NOT_FOUND);
         }
-        product.get().setCourier(courier.get());
+        if(courier.get().getDeliveriesList() != null){
+            products = courier.get().getDeliveriesList();
+        }
+        products.add(product.get());
+        product.get().setDeliveredBy(courier.get());
         courier.get().setSalary(courier.get().getSalary() + 75);
+        productRepository.save(product.get());
     }
 
 

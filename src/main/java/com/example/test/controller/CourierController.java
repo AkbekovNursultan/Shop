@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/delivery")
+@RequestMapping("/courier")
 public class CourierController {
     private final CourierService courierService;
     private final CourierMapper courierMapper;

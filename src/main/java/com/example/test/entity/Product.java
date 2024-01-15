@@ -26,6 +26,6 @@ public class Product {
     Worker orderedBy;
 
     @ManyToOne()
-    Courier courier;
+    Courier deliveredBy;
 }
 

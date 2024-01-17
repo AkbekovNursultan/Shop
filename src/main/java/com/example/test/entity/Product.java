@@ -1,6 +1,5 @@
 package com.example.test.entity;
 
-import com.example.test.enums.Category;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,17 +14,18 @@ import lombok.Setter;
 @Entity
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @Enumerated(EnumType.STRING)
-    private Category category;
     private Integer quantity;
+    private Integer price;
+    private String code;
+    private String created_date;
 
     @ManyToOne()
-    Worker orderedBy;
-
+    private Customer customer;
     @ManyToOne()
-    Courier deliveredBy;
+    private Category category;
+
 }
 

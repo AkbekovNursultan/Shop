@@ -6,8 +6,9 @@ import lombok.Setter;
 @Getter
 @Setter
 
-public class ProductRequest {
+public class ProductAddRequest {
     private String name;
+    private String code;
     private String category;
-    private Integer quantity;
+    private Integer price;
 }

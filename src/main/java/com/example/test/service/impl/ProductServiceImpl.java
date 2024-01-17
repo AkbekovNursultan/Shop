@@ -38,10 +38,10 @@ public class ProductServiceImpl implements ProductService {
         product.setQuantity(0);
         product.setCode(request.getCode());
         product.setCreated_date(LocalDateTime.now().toString());
-        Optional<Category> category = productCategoryRepository.findByName(request.getCategory());
-        if (category.isEmpty())
-            throw new NotFoundException("sjhbf", HttpStatus.BAD_REQUEST);
-        product.setCategory(category.get());
+//        Optional<Category> category = productCategoryRepository.findByName(request.getCategory());
+//        if (category.isEmpty())
+//            throw new NotFoundException("sjhbf", HttpStatus.BAD_REQUEST);
+//        product.setCategory(category.get());
         productRepository.save(product);
     }
 }

@@ -5,8 +5,11 @@ import com.example.test.dto.UserRegisterRequest;
 import com.example.test.dto.auth.AuthLoginRequest;
 import com.example.test.dto.auth.AuthLoginResponse;
 import com.example.test.entity.Customer;
+import com.example.test.entity.Director;
 import com.example.test.entity.User;
 import com.example.test.enums.Role;
+import com.example.test.exception.BadRequestException;
+import com.example.test.repository.DirectorRepository;
 import com.example.test.repository.UserRepository;
 import com.example.test.service.AuthService;
 import lombok.AllArgsConstructor;
@@ -20,6 +23,7 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 
+import java.net.Proxy;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +38,7 @@ public class AuthServiceImpl implements AuthService{
     private PasswordEncoder encoder;
     private AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private DirectorRepository directorRepository;
     @Override
     public void register(UserRegisterRequest userRegisterRequest) {
         if (userRepository.findByUsername(userRegisterRequest.getUsername()).isPresent())
@@ -41,14 +46,22 @@ public class AuthServiceImpl implements AuthService{
 
         User user = new User();
         user.setUsername(userRegisterRequest.getUsername());
-        user.setRole(Role.CUSTOMER);
+        if(containsType(userRegisterRequest.getRole())){
+            throw new BadRequestException("Lol");
+        }
+        user.setRole(Role.valueOf(userRegisterRequest.getRole()));
         user.setPassword(encoder.encode(userRegisterRequest.getPassword()));
-        Customer customer = new Customer();
-        customer.setUser(user);
-        customer.setName(
-                userRegisterRequest.getName()
-        );
-        user.setCustomer(customer);
+        if(user.getRole().equals(Role.CUSTOMER)) {
+            Customer customer = new Customer();
+            customer.setUser(user);
+            customer.setName(userRegisterRequest.getName());
+            user.setCustomer(customer);
+        } else if(user.getRole().equals(Role.DIRECTOR)) {
+            Director director = new Director();
+            director.setName(userRegisterRequest.getName());
+            user.setDirector(director);
+            directorRepository.save(director);
+        }
         userRepository.save(user);
     }
 
@@ -98,5 +111,11 @@ public class AuthServiceImpl implements AuthService{
         }
         return userRepository.findByUsername(String.valueOf(object.get("sub"))).orElseThrow(() -> new RuntimeException("user can be null"));
     }
-
+    private boolean containsType(String type) {
+        for (Role role:Role.values()){
+            if (role.name().equalsIgnoreCase(type))
+                return true;
+        }
+        return false;
+    }
 }

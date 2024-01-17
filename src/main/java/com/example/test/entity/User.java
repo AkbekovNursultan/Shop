@@ -27,6 +27,8 @@ public class User implements UserDetails {
 
     @OneToOne(cascade = CascadeType.ALL)
     private Customer customer;
+    @OneToOne(cascade = CascadeType.ALL)
+    private Director director;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService{
 
         User user = new User();
         user.setUsername(userRegisterRequest.getUsername());
-        if(containsType(userRegisterRequest.getRole())){
+        if(!containsType(userRegisterRequest.getRole())){
             throw new BadRequestException("Lol");
         }
         user.setRole(Role.valueOf(userRegisterRequest.getRole()));
@@ -56,6 +56,7 @@ public class AuthServiceImpl implements AuthService{
             customer.setUser(user);
             customer.setName(userRegisterRequest.getName());
             user.setCustomer(customer);
+            //customerRepository.save(customer);
         } else if(user.getRole().equals(Role.DIRECTOR)) {
             Director director = new Director();
             director.setName(userRegisterRequest.getName());

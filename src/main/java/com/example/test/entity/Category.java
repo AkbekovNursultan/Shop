@@ -15,5 +15,5 @@ public class Category {
     private Long id;
     private String name;
     @OneToMany()
-    private List<Product> productCategories;
+    private List<Product> products;
 }

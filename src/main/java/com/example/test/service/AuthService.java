@@ -6,7 +6,7 @@ import com.example.test.dto.auth.AuthLoginResponse;
 import com.example.test.entity.User;
 
 public interface AuthService {
-    void register(UserRegisterRequest userRegisterRequest);
+    String register(UserRegisterRequest userRegisterRequest);
 
     AuthLoginResponse login(AuthLoginRequest authLoginRequest);
     User getUsernameFromToken(String token);

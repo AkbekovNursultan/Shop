@@ -22,7 +22,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final AuthService authService;
     private final CategoryMapper categoryMapper;
     @Override
-    public void addCategory(String name, String token) {
+    public String addCategory(String name, String token) {
         Category category = new Category();
         if(!authService.getUsernameFromToken(token).getRole().equals(Role.DIRECTOR))
             throw new BadCredentialsException("You have no permission");
@@ -30,6 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
             throw new BadRequestException("It is already added");
         category.setName(name);
         categoryRepository.save(category);
+        return "Success";
     }
 
     @Override

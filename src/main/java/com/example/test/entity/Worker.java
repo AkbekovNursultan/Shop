@@ -7,12 +7,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Director {
+public class Worker {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @OneToOne(mappedBy = "director")
+    private Integer tasks_completed;
+    @OneToOne(mappedBy = "worker")
     private User user;
 
 }

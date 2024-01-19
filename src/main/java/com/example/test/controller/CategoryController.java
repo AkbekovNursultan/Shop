@@ -16,8 +16,8 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping("/add")
-    public void addCategory(@RequestParam String name, @RequestHeader("Authorization") String token){
-        categoryService.addCategory(name, token);
+    public String addCategory(@RequestParam String name, @RequestHeader("Authorization") String token){
+        return categoryService.addCategory(name, token);
     }
     @GetMapping("/getAll")
     public List<CategoryResponse> typeResponses(){

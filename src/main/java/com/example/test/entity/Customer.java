@@ -14,12 +14,13 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private Integer age;
+    private Integer balance;
 
     @OneToOne(mappedBy = "customer")
     private User user;
 
-    @OneToMany()
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Product> products ;
-
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Purchase> purchases;
 }

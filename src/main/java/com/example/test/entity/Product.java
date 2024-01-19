@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -22,10 +24,12 @@ public class Product {
     private String code;
     private String created_date;
 
-    @ManyToOne()
+    @ManyToOne(cascade = CascadeType.ALL)
     private Customer customer;
-    @ManyToOne()
+    @ManyToOne(cascade = CascadeType.ALL)
     private Category category;
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<Purchase> purchases;
 
 }
 

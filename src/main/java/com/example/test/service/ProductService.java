@@ -6,11 +6,11 @@ import com.example.test.dto.product.ProductResponse;
 import java.util.List;
 
 public interface ProductService {
-    void addProduct(ProductAddRequest request, String token);
+    String addNewProduct(ProductAddRequest request, String token);
 
     List<ProductResponse> getAll(String category);
 
-    void buy(String code, String token);
+    void buy(String code, Integer amount, String token);
 
-    void deleteById(Long id, String token);
+    void restock(String code, Integer amount, String token);
 }

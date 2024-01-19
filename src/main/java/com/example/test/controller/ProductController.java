@@ -16,20 +16,20 @@ public class ProductController {
     private final ProductRepository productRepository;
     private final ProductService productService;
 
+    @PostMapping("/add_new_product")
+    public String addNewProduct(@RequestBody ProductAddRequest productAddRequest, @RequestHeader("Authorization") String token) {
+        return productService.addNewProduct(productAddRequest, token);
+    }
     @PostMapping("/add")
-    public void register(@RequestBody ProductAddRequest productAddRequest, @RequestHeader("Authorization") String token) {
-        productService.addProduct(productAddRequest, token);
+    public void restock(@RequestParam String code, @RequestParam Integer amount, @RequestHeader("Authorization") String token){
+        productService.restock(code, amount, token);
     }
     @GetMapping("/category")
     public List<ProductResponse> bookResponses(@RequestParam String category){
         return productService.getAll(category);
     }
     @PostMapping("/buy")
-    public void buy(@RequestParam String code, @RequestHeader("Authorization") String token){
-        productService.buy(code, token);
-    }
-    @DeleteMapping("/remove/{id}")
-    public void removeById(@PathVariable Long id, @RequestHeader("Authorization") String token){
-        productService.deleteById(id, token);
+    public void buy(@RequestParam String code, @RequestParam Integer amount, @RequestHeader("Authorization") String token){
+        productService.buy(code, amount, token);
     }
 }

@@ -2,16 +2,12 @@ package com.example.test.service.impl;
 
 import com.example.test.dto.product.ProductAddRequest;
 import com.example.test.dto.product.ProductResponse;
-import com.example.test.entity.Category;
-import com.example.test.entity.Product;
-import com.example.test.entity.User;
+import com.example.test.entity.*;
 import com.example.test.enums.Role;
 import com.example.test.exception.BadRequestException;
 import com.example.test.exception.NotFoundException;
 import com.example.test.mapper.ProductMapper;
-import com.example.test.repository.CategoryRepository;
-import com.example.test.repository.ProductRepository;
-import com.example.test.repository.UserRepository;
+import com.example.test.repository.*;
 import com.example.test.service.AuthService;
 import com.example.test.service.ProductService;
 import lombok.AllArgsConstructor;
@@ -32,13 +28,15 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
     private final UserRepository userRepository;
+    private final CustomerRepository customerRepository;
+    private final PurchasesRepository purchaseRepository;
     @Override
-    public void addProduct(ProductAddRequest request, String token) {
+    public String addNewProduct(ProductAddRequest request, String token) {
         if (productRepository.findByCode(request.getCode()).isPresent())
-            throw new NotFoundException("book with this transcript is already exist!: "+request.getCode(),
+            throw new NotFoundException("Product with this code is already in storage!: "+request.getCode(),
                     HttpStatus.BAD_REQUEST);
         if (!authService.getUsernameFromToken(token).getRole().equals(Role.DIRECTOR))
-            throw new BadCredentialsException("this function only for admin!");
+            throw new BadCredentialsException("This function only for Director!");
 
         Product product = new Product();
 
@@ -57,9 +55,10 @@ public class ProductServiceImpl implements ProductService {
         }
         products.add(product);
         category.get().setProducts(products);
-        //product.getCategory().setProducts(products);
         productRepository.save(product);
+        return "Success";
     }
+
 
     @Override
     public List<ProductResponse> getAll(String category) {
@@ -71,27 +70,61 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void buy(String code, String token) {
+    public void buy(String code, Integer amount, String token) {
         User user = authService.getUsernameFromToken(token);
-        Product product = productRepository.findByCode(code).get();
-        if(product.getQuantity().equals(0))
-            throw new BadRequestException("Out of stocks");
-        List<Product> products = new ArrayList<>();
-        if(!user.getCustomer().getProducts().isEmpty()){
-            products = user.getCustomer().getProducts();
+        if(!user.getRole().equals(Role.CUSTOMER)){
+            throw new BadRequestException("You can't do this");
         }
-        product.setQuantity(product.getQuantity()-1);
-        products.add(product);
-        user.getCustomer().setProducts(products);
+        Customer customer = user.getCustomer();
+        Optional<Product> product = productRepository.findByCode(code);
+        if(product.isEmpty()){
+            throw new NotFoundException("Code is invalid", HttpStatus.NOT_FOUND);
+        }
+        if(product.get().getQuantity().equals(0) || product.get().getQuantity()-amount < 0)
+            throw new BadRequestException("Out of stock.");
+        if(customer.getBalance() < amount * product.get().getPrice()){
+            throw new BadRequestException("Not enough balance.");
+        }
+        customer.setBalance(customer.getBalance() - amount * product.get().getPrice());
+        List<Product> products = new ArrayList<>();
+        if(!customer.getProducts().isEmpty()){
+            products = customer.getProducts();
+        }
+        product.get().setQuantity(product.get().getQuantity()-amount);
+        if(!customer.getProducts().contains(product)){
+            products.add(product.get());
+        }
+//
+        List<Purchase> newPurchases = new ArrayList<>();
+        Purchase purchase = new Purchase();
+        if(!customer.getPurchases().isEmpty()){
+            newPurchases = customer.getPurchases();
+        }
+
+        if(!customer.getPurchases().contains(purchase)){
+            newPurchases.add(purchase);
+        }
+
+        product.get().setPurchases(newPurchases);
+        customer.setProducts(products);
+        purchase.setCustomer(customer);
+        purchase.setProducts(products);
+        purchase.setQuantity(amount);
+        purchase.setCost(amount * product.get().getPrice());
+
         userRepository.save(user);
     }
 
     @Override
-    public void deleteById(Long id, String token) {
-        if(authService.getUsernameFromToken(token).getRole().equals(Role.DIRECTOR))
-            productRepository.deleteById(id);
-        else{
-            throw new BadRequestException("You have no permission");
+    public void restock(String code, Integer amount, String token) {
+        User user = authService.getUsernameFromToken(token);
+        if(!user.getRole().equals(Role.WORKER)){
+            throw new BadRequestException("You can't do this");
         }
+        Optional <Product> product = productRepository.findByCode(code);
+        if(product.isEmpty())
+            throw new NotFoundException("Code is invalid.", HttpStatus.NOT_FOUND);
+        product.get().setQuantity(product.get().getQuantity() + amount);
+        productRepository.save(product.get());
     }
 }

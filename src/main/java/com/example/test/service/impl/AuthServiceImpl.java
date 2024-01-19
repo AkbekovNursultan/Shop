@@ -5,11 +5,11 @@ import com.example.test.dto.UserRegisterRequest;
 import com.example.test.dto.auth.AuthLoginRequest;
 import com.example.test.dto.auth.AuthLoginResponse;
 import com.example.test.entity.Customer;
-import com.example.test.entity.Director;
+import com.example.test.entity.Worker;
 import com.example.test.entity.User;
 import com.example.test.enums.Role;
 import com.example.test.exception.BadRequestException;
-import com.example.test.repository.DirectorRepository;
+import com.example.test.repository.WorkerRepository;
 import com.example.test.repository.UserRepository;
 import com.example.test.service.AuthService;
 import lombok.AllArgsConstructor;
@@ -23,12 +23,9 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 
-import java.net.Proxy;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-
 import java.util.Optional;
 
 @Service
@@ -38,32 +35,33 @@ public class AuthServiceImpl implements AuthService{
     private PasswordEncoder encoder;
     private AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private DirectorRepository directorRepository;
+    private WorkerRepository workerRepository;
     @Override
-    public void register(UserRegisterRequest userRegisterRequest) {
+    public String register(UserRegisterRequest userRegisterRequest) {
         if (userRepository.findByUsername(userRegisterRequest.getUsername()).isPresent())
             throw new BadCredentialsException("user with email: "+userRegisterRequest.getUsername()+" is already exist!");
 
         User user = new User();
         user.setUsername(userRegisterRequest.getUsername());
         if(!containsType(userRegisterRequest.getRole())){
-            throw new BadRequestException("Lol");
+            throw new BadRequestException("Invalid input.");
         }
         user.setRole(Role.valueOf(userRegisterRequest.getRole()));
         user.setPassword(encoder.encode(userRegisterRequest.getPassword()));
         if(user.getRole().equals(Role.CUSTOMER)) {
             Customer customer = new Customer();
             customer.setUser(user);
+            customer.setBalance(5000);
             customer.setName(userRegisterRequest.getName());
             user.setCustomer(customer);
-            //customerRepository.save(customer);
-        } else if(user.getRole().equals(Role.DIRECTOR)) {
-            Director director = new Director();
-            director.setName(userRegisterRequest.getName());
-            user.setDirector(director);
-            directorRepository.save(director);
+        } else if(user.getRole().equals(Role.WORKER)) {
+            Worker worker = new Worker();
+            worker.setName(userRegisterRequest.getName());
+            user.setWorker(worker);
+            workerRepository.save(worker);
         }
         userRepository.save(user);
+        return "Successfully registered.";
     }
 
     @Override

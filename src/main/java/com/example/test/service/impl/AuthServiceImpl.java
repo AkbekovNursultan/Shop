@@ -39,7 +39,7 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public String register(UserRegisterRequest userRegisterRequest) {
         if (userRepository.findByUsername(userRegisterRequest.getUsername()).isPresent())
-            throw new BadCredentialsException("user with email: "+userRegisterRequest.getUsername()+" is already exist!");
+            throw new BadCredentialsException("user with username: "+userRegisterRequest.getUsername()+" is already exists!");
 
         User user = new User();
         user.setUsername(userRegisterRequest.getUsername());
@@ -96,7 +96,7 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
-    public User getUsernameFromToken(String token){
+    public User getUserFromToken(String token){
 
         String[] chunks = token.substring(7).split("\\.");
         Base64.Decoder decoder = Base64.getUrlDecoder();

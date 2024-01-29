@@ -9,5 +9,5 @@ public interface AuthService {
     String register(UserRegisterRequest userRegisterRequest);
 
     AuthLoginResponse login(AuthLoginRequest authLoginRequest);
-    User getUsernameFromToken(String token);
+    User getUserFromToken(String token);
 }

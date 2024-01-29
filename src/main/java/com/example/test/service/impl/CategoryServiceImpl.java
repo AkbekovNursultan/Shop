@@ -24,7 +24,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public String addCategory(String name, String token) {
         Category category = new Category();
-        if(!authService.getUsernameFromToken(token).getRole().equals(Role.DIRECTOR))
+        if(!authService.getUserFromToken(token).getRole().equals(Role.DIRECTOR))
             throw new BadCredentialsException("You have no permission");
         if(categoryRepository.findByName(name).isPresent())
             throw new BadRequestException("It is already added");

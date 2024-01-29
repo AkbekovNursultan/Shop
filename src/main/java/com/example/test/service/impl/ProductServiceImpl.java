@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -35,7 +36,7 @@ public class ProductServiceImpl implements ProductService {
         if (productRepository.findByCode(request.getCode()).isPresent())
             throw new NotFoundException("Product with this code is already in storage!: "+request.getCode(),
                     HttpStatus.BAD_REQUEST);
-        if (!authService.getUsernameFromToken(token).getRole().equals(Role.DIRECTOR))
+        if (!authService.getUserFromToken(token).getRole().equals(Role.DIRECTOR))
             throw new BadCredentialsException("This function only for Director!");
 
         Product product = new Product();
@@ -71,7 +72,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void buy(String code, Integer amount, String token) {
-        User user = authService.getUsernameFromToken(token);
+        User user = authService.getUserFromToken(token);
         if(!user.getRole().equals(Role.CUSTOMER)){
             throw new BadRequestException("You can't do this");
         }
@@ -117,7 +118,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void restock(String code, Integer amount, String token) {
-        User user = authService.getUsernameFromToken(token);
+        User user = authService.getUserFromToken(token);
         if(!user.getRole().equals(Role.WORKER)){
             throw new BadRequestException("You can't do this");
         }
@@ -126,5 +127,28 @@ public class ProductServiceImpl implements ProductService {
             throw new NotFoundException("Code is invalid.", HttpStatus.NOT_FOUND);
         product.get().setQuantity(product.get().getQuantity() + amount);
         productRepository.save(product.get());
+    }
+
+    @Override
+    public void delete(String code, String token) {
+        User user = authService.getUserFromToken(token);
+        Optional<Product> product = productRepository.findByCode(code);
+        if(product.isEmpty()){
+            throw new NotFoundException("lol", HttpStatus.NOT_FOUND);
+        }
+        detachUser(product.get());
+        productRepository.delete(product.get());
+    }
+
+    public void detachUser(Product product) {
+        List<Product> products = product.getCustomer().getProducts();
+        List<Product> newProducts = new ArrayList<>();
+        for (Product product1 : products)
+            if (!Objects.equals(product.getId(), product1.getId()))
+                newProducts.add(product1);
+        User user = product.getCustomer().getUser();
+        user.getCustomer().setProducts(newProducts);
+        userRepository.save(user);
+        product.setCustomer(null);
     }
 }

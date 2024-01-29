@@ -13,4 +13,6 @@ public interface ProductService {
     void buy(String code, Integer amount, String token);
 
     void restock(String code, Integer amount, String token);
+
+    void delete(String code, String token);
 }
